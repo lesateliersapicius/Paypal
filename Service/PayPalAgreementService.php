@@ -49,7 +49,6 @@ use PayPal\Model\PaypalPlanifiedPayment;
 use PayPal\Model\PaypalPlanQuery;
 use PayPal\PayPal;
 use PayPal\Service\Base\PayPalBaseService;
-use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Routing\Router;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\CurrencyQuery;
