@@ -23,7 +23,6 @@
 
 namespace PayPal\Service;
 
-use ApyMyBox\Helper\OrderHelper;
 use Monolog\Logger;
 use PayPal\Api\Agreement;
 use PayPal\Api\AgreementStateDescriptor;
@@ -60,6 +59,10 @@ use Thelia\Model\OrderProductTax;
 use Thelia\Model\OrderProductTaxQuery;
 use Thelia\Tools\URL;
 
+/**
+ * Class PayPalAgreementService
+ * @package PayPal\Service
+ */
 class PayPalAgreementService extends PayPalBaseService
 {
     const PLAN_TYPE_FIXED = 'FIXED';
@@ -101,7 +104,7 @@ class PayPalAgreementService extends PayPalBaseService
         $merchantPreferences = $this->createMerchantPreferences($order);
         $chargeModel = $this->createChargeModel($order);
 
-        $totalAmount = OrderHelper::getTotalAmount($order);
+        $totalAmount = $this->orderHelper::getTotalAmount($order);
         $cycleAmount = round($totalAmount / $planifiedPayment->getCycle(), 2);
 
         $paymentDefinition = $this->createPaymentDefinition(
@@ -609,7 +612,7 @@ class PayPalAgreementService extends PayPalBaseService
         $paymentDefinition = new PaymentDefinition();
 
         if (null === $cycleAmount) {
-            $totalAmount = OrderHelper::getTotalAmount($order);
+            $totalAmount = $this->orderHelper::getTotalAmount($order);
             $cycleAmount = round($totalAmount / $cycles, 2);
         }
 
