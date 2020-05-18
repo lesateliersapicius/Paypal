@@ -52,8 +52,9 @@ use Thelia\Tools\URL;
 class PayPal extends AbstractPaymentModule
 {
     /** @var string */
-    const DOMAIN_NAME = 'paypal';
-    const ROUTER      = 'router.paypal';
+    const DOMAIN_NAME     = 'paypal';
+    const ROUTER          = 'router.paypal';
+    const PAYMENT_ENABLED = 'paypal_payment_enabled';
 
     /**
      * The confirmation message identifier
@@ -251,13 +252,17 @@ class PayPal extends AbstractPaymentModule
     {
         $isValid = false;
 
+        if (!self::isPaymentEnabled()) {
+            return false;
+        }
+
         $order_total = 0;
         if ($this->getRequest()->query->has('token')) {
             $tokenLink = $this->getRequest()->get('token');
             /** @var OrderHelperInterface $orderHelper */
-            $orderHelper = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
+            $orderHelper        = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
             $apyOrderQueryClass = $orderHelper->getApyOrderQueryClassName();
-            $apyOrder  = $apyOrderQueryClass::create()->findOneByLinkToken($tokenLink);
+            $apyOrder           = $apyOrderQueryClass::create()->findOneByLinkToken($tokenLink);
 
             if ($this->getRequest()->getSession()->get(ApyUtilities::ORDER_TO_PAY_ID) == $apyOrder->getOrderId()) {
                 $orderHelper = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
@@ -291,7 +296,7 @@ class PayPal extends AbstractPaymentModule
                     // In sandbox mode, check the current IP
                     $raw_ips = explode("\n", Paypal::getConfigValue('allowed_ip_list', ''));
 
-                    $allowed_client_ips = array();
+                    $allowed_client_ips = [];
 
                     foreach ($raw_ips as $ip) {
                         $allowed_client_ips[] = trim($ip);
@@ -326,7 +331,7 @@ class PayPal extends AbstractPaymentModule
     public function postActivation(ConnectionInterface $con = null)
     {
         $database = new Database($con);
-        $database->insertSql(null, array(__DIR__ . "/Config/create.sql"));
+        $database->insertSql(null, [__DIR__ . "/Config/create.sql"]);
 
         // Setup some default values at first install
         if (null === self::getConfigValue('minimum_amount', null)) {
@@ -415,4 +420,24 @@ class PayPal extends AbstractPaymentModule
             }
         }
     }
+
+    /**
+     * Vérifier si la checkBox pour activé le mode de payement est actif
+     * @return bool
+     */
+    public static function isPaymentEnabled()
+    {
+        return Paypal::getConfigValue(self::PAYMENT_ENABLED);
+    }
+
+    /**
+     * Changer la config
+     * @param bool $enabled
+     * @throws PropelException
+     */
+    public static function changePaymentEnabled($enabled)
+    {
+        return Paypal::setConfigValue(self::PAYMENT_ENABLED, $enabled);
+    }
 }
+
