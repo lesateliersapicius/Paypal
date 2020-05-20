@@ -332,7 +332,7 @@ class PayPal extends AbstractPaymentModule
     {
         self::changePaymentEnabled(false);
     }
-    
+
     /**
      * @param ConnectionInterface      $con
      * @param ConnectionInterface|null $con
@@ -448,16 +448,6 @@ class PayPal extends AbstractPaymentModule
     public static function changePaymentEnabled($enabled)
     {
         return Paypal::setConfigValue(self::PAYMENT_ENABLED, $enabled);
-    }
-
-
-    /**
-     * @param ConnectionInterface|null $con
-     * @throws Exception
-     */
-    public function postDeactivation(ConnectionInterface $con = null)
-    {
-        self::changePaymentEnabled(false);
     }
 }
 
