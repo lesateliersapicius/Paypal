@@ -449,5 +449,15 @@ class PayPal extends AbstractPaymentModule
     {
         return Paypal::setConfigValue(self::PAYMENT_ENABLED, $enabled);
     }
+
+
+    /**
+     * @param ConnectionInterface|null $con
+     * @throws Exception
+     */
+    public function postDeactivation(ConnectionInterface $con = null)
+    {
+        self::changePaymentEnabled(false);
+    }
 }
 

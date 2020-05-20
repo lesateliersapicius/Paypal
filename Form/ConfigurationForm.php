@@ -23,8 +23,8 @@
 
 namespace PayPal\Form;
 
+use ApyUtilities\Form\Type\CheckboxSwitchType;
 use PayPal\PayPal;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Form\BaseForm;
@@ -52,7 +52,7 @@ class ConfigurationForm extends BaseForm
                     ]
                 ]
             )
-            ->add(PayPal::PAYMENT_ENABLED, CheckboxType::class, [
+            ->add(PayPal::PAYMENT_ENABLED, CheckboxSwitchType::class, [
                 'label'    => $this->translator->trans(
                     'paypal.config.form.payment_enabled.label',
                     [],
