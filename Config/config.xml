@@ -106,6 +106,10 @@
         <service id="paypal.planified.payment.listener" class="PayPal\EventListeners\PayPalPlanifiedPaymentListener">
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="paypal.provider.paypal_module_conf_provider" class="PayPal\Provider\PayPalModuleConfProvider">
+            <tag name="core.payment_module_conf"/>
+        </service>
     </services>
 
     <hooks>
