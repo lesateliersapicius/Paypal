@@ -54,7 +54,7 @@ class ConfigurationForm extends BaseForm
             )
             ->add(PayPal::PAYMENT_ENABLED, CheckboxSwitchType::class, [
                 'label'    => $this->translator->trans(
-                    'paypal.config.form.payment_enabled.label',
+                    'Enable PAYPAL as payment method',
                     [],
                     PayPal::DOMAIN_NAME
                 ),

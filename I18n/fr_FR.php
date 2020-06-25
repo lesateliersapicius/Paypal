@@ -73,5 +73,5 @@ return array(
     'Your Paypal sandbox password' => 'Client SECRET',
     'login' => 'Client ID',
     'password' => 'Client SECRET',
-    'paypal.config.form.payment_enabled.label' => 'Activer PAYPAL comme mode de paiement'
+    'Enable PAYPAL as payment method' => 'Activer PAYPAL comme mode de paiement'
 );
