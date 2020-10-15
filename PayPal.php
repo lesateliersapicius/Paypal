@@ -14,6 +14,7 @@ namespace PayPal;
 
 use ApySecurity\Model\Role\RoleInterface;
 use ApyUtilities\ApyUtilities;
+use ApyUtilities\Interfaces\ApyPaymentEnabledModuleInterface;
 use ApyUtilities\Interfaces\CartHelperInterface;
 use ApyUtilities\Interfaces\OrderHelperInterface;
 use Exception;
@@ -49,7 +50,7 @@ use Thelia\Model\ProfileQuery;
 use Thelia\Module\AbstractPaymentModule;
 use Thelia\Tools\URL;
 
-class PayPal extends AbstractPaymentModule
+class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInterface
 {
     /** @var string */
     const DOMAIN_NAME     = 'paypal';
@@ -435,9 +436,9 @@ class PayPal extends AbstractPaymentModule
      * Vérifier si la checkBox pour activé le mode de payement est actif
      * @return bool
      */
-    public static function isPaymentEnabled()
+    public static function isPaymentEnabled() : bool
     {
-        return Paypal::getConfigValue(self::PAYMENT_ENABLED);
+        return (bool)Paypal::getConfigValue(self::PAYMENT_ENABLED, false);
     }
 
     /**
