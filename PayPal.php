@@ -16,6 +16,7 @@ use ApySecurity\Model\Role\RoleInterface;
 use ApyUtilities\ApyUtilities;
 use ApyUtilities\Interfaces\CartHelperInterface;
 use ApyUtilities\Interfaces\OrderHelperInterface;
+use ApyUtilities\Traits\PaymentModuleNoLoginTrait;
 use Exception;
 use Monolog\Logger;
 use PayPal\Exception\PayPalConnectionException;
@@ -51,6 +52,7 @@ use Thelia\Tools\URL;
 
 class PayPal extends AbstractPaymentModule
 {
+    use PaymentModuleNoLoginTrait;
     /** @var string */
     const DOMAIN_NAME     = 'paypal';
     const ROUTER          = 'router.paypal';
