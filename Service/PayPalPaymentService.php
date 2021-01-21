@@ -37,6 +37,8 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Exception\PayPalConnectionException;
+use PayPal\Model\PaypalOrder;
+use PayPal\Model\PaypalOrderQuery;
 use PayPal\PayPal;
 use PayPal\Service\Base\PayPalBaseService;
 use Thelia\Core\Translation\Translator;
@@ -66,8 +68,6 @@ class PayPalPaymentService extends PayPalBaseService
      */
     public function makePayment(Order $order, $creditCardId = null, $description = null, $future = false)
     {
-        $payPalOrderEvent = $this->generatePayPalOrder($order);
-
         if (null !== $creditCardId) {
             $creditCardToken = new CreditCardToken();
             $creditCardToken->setCreditCardId($creditCardId);
@@ -88,11 +88,17 @@ class PayPalPaymentService extends PayPalBaseService
         $amount = $this->generateAmount($order, $currency);
 
         $transaction = $this->generateTransaction($amount, $description);
-
-        $payment = $this->generatePayment($order, $payer, $transaction, $future);
-
-        $this->updatePayPalOrder($payPalOrderEvent->getPayPalOrder(), $payment->getState(), $payment->getId());
-
+        // Search paypal order
+        $payPalOrder = PaypalOrderQuery::create()->findOneById($order->getId());
+        if ($payPalOrder instanceof PaypalOrder) {
+            $payment = $this->getPaymentDetails($payPalOrder->getPaymentId());
+        } else {
+            $payPalOrderEvent = $this->generatePayPalOrder($order);
+            $payPalOrder = $payPalOrderEvent->getPayPalOrder();
+            $payment = $this->generatePayment($order, $payer, $transaction, $future);
+        }
+        $this->updatePayPalOrder($payPalOrder, $payment->getState(), $payment->getId());
+        
         return $payment;
     }
 
