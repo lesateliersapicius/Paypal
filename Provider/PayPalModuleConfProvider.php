@@ -34,4 +34,16 @@ class PayPalModuleConfProvider extends AbstractPaymentModuleConf
     {
         return (bool)PayPal::isPaymentEnabled();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getData(): array
+    {
+        return [
+            'clientID'     => Paypal::getConfigValue('login', ''),
+            'clientSecret' => Paypal::getConfigValue('password', ''),
+            'merchantID'   => Paypal::getConfigValue('merchant_id', ''),
+        ];
+    }
 }
