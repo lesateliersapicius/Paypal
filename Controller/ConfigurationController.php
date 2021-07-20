@@ -61,6 +61,8 @@ class ConfigurationController extends BaseAdminController
             // Get the form field values
             $data = $form->getData();
 
+            $oldStatus = Paypal::isPaymentEnabled();
+
             foreach ($data as $name => $value) {
                 if (is_array($value)) {
                     $value = implode(';', $value);
@@ -77,10 +79,17 @@ class ConfigurationController extends BaseAdminController
             PayPal::setConfigValue('send_payment_confirmation_message', false);
             PayPal::setConfigValue('send_recursive_message', false);
 
+            // histoire de ne pas devoir aller en BDD pour éplucher la request, on regarde si le statut du mode de
+            // paiement a changé ou non, pour l'indiquer directement dans le message
+            $statusLog = '';
+            if ($oldStatus !== $data[Paypal::PAYMENT_ENABLED]) {
+                $statusLog = $data[Paypal::PAYMENT_ENABLED] ? ' (Payment actived)' : ' (Payment deactived)';
+            }
+            // Log configuration modification
             $this->adminLogAppend(
-                "paypal.configuration.message",
+                AdminResources::UPDATE,
                 AccessManager::UPDATE,
-                sprintf("Paypal configuration updated")
+                'PayPal configuration updated' . $statusLog
             );
 
             if ($this->getRequest()->get('save_mode') == 'stay') {
