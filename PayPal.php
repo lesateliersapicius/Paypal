@@ -22,6 +22,8 @@ use Exception;
 use Monolog\Logger;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Model\PaypalCartQuery;
+use PayPal\Model\PaypalOrder;
+use PayPal\Model\PaypalOrderQuery;
 use PayPal\Model\PaypalPlanifiedPaymentQuery;
 use PayPal\Service\Base\PayPalBaseService;
 use PayPal\Service\PayPalAgreementService;
@@ -451,6 +453,21 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
     public static function changePaymentEnabled($enabled)
     {
         return Paypal::setConfigValue(self::PAYMENT_ENABLED, $enabled);
+    }
+
+
+    /**
+     * @param Order $order
+     * @return string
+     */
+    public static function getTransactionForOrder(Order $order): string
+    {
+        $paypalOrder = PaypalOrderQuery::create()->findOneById($order->getId());
+        if ($paypalOrder instanceof PaypalOrder) {
+            return $paypalOrder->getPaymentId();
+        }
+
+        return '';
     }
 }
 
