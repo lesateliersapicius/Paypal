@@ -4,6 +4,7 @@ namespace PayPal\Provider;
 
 use ApyUtilities\Provider\AbstractPaymentModuleConf;
 use PayPal\PayPal;
+use stdClass;
 
 /**
  * Class PayPalModuleConfProvider
@@ -38,9 +39,9 @@ class PayPalModuleConfProvider extends AbstractPaymentModuleConf
     /**
      * @inheritDoc
      */
-    public function getData(): array
+    public function getData(): stdClass
     {
-        return [
+        return (object)[
             'clientID'     => Paypal::getConfigValue('login', ''),
             'clientSecret' => Paypal::getConfigValue('password', ''),
             'merchantID'   => Paypal::getConfigValue('merchant_id', ''),
