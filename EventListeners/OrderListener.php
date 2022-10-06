@@ -23,6 +23,7 @@
 
 namespace PayPal\EventListeners;
 
+use ApyUtilities\Interfaces\CustomerMailerInterface;
 use PayPal\Event\PayPalCartEvent;
 use PayPal\Event\PayPalEvents;
 use PayPal\Form\PayPalFormFields;
@@ -35,7 +36,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
-use Thelia\Mailer\MailerFactory;
 
 /**
  * Class OrderListener
@@ -43,8 +43,8 @@ use Thelia\Mailer\MailerFactory;
  */
 class OrderListener implements EventSubscriberInterface
 {
-    /** @var MailerFactory */
-    protected $mailer;
+    /** @var CustomerMailerInterface */
+    private $customerMailer;
 
     /** @var EventDispatcherInterface */
     protected $dispatcher;
@@ -59,19 +59,25 @@ class OrderListener implements EventSubscriberInterface
     protected $payPalAgreementService;
 
     /**
-     * @param MailerFactory $mailer
      * @param EventDispatcherInterface $dispatcher
      * @param RequestStack $requestStack
      * @param PayPalPaymentService $payPalPaymentService
      * @param PayPalAgreementService $payPalAgreementService
      */
-    public function __construct(MailerFactory $mailer, EventDispatcherInterface $dispatcher, RequestStack $requestStack, PayPalPaymentService $payPalPaymentService, PayPalAgreementService $payPalAgreementService)
+    public function __construct(EventDispatcherInterface $dispatcher, RequestStack $requestStack, PayPalPaymentService $payPalPaymentService, PayPalAgreementService $payPalAgreementService)
     {
         $this->dispatcher = $dispatcher;
-        $this->mailer = $mailer;
         $this->requestStack = $requestStack;
         $this->payPalPaymentService = $payPalPaymentService;
         $this->payPalAgreementService = $payPalAgreementService;
+    }
+
+    /**
+     * @param CustomerMailerInterface $customerMailer
+     */
+    public function setCustomerMailer(CustomerMailerInterface $customerMailer)
+    {
+        $this->customerMailer = $customerMailer;
     }
 
     /**
@@ -110,7 +116,7 @@ class OrderListener implements EventSubscriberInterface
 
         if ($order->isPaid() && $order->getPaymentModuleId() === Paypal::getModuleId()) {
             if (Paypal::getConfigValue('send_payment_confirmation_message')) {
-                $this->mailer->sendEmailToCustomer(
+                $this->customerMailer->sendEmailToCustomer(
                     PayPal::CONFIRMATION_MESSAGE_NAME,
                     $order->getCustomer(),
                     [
@@ -150,9 +156,8 @@ class OrderListener implements EventSubscriberInterface
     public function recursivePayment(OrderEvent $event)
     {
         $this->payPalAgreementService->duplicateOrder($event->getOrder());
-
         if (PayPal::getConfigValue('send_recursive_message')) {
-            $this->mailer->sendEmailToCustomer(
+            $this->customerMailer->sendEmailToCustomer(
                 PayPal::RECURSIVE_MESSAGE_NAME,
                 $event->getOrder()->getCustomer(),
                 [
