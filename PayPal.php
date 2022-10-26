@@ -32,6 +32,7 @@ use PayPal\Service\PayPalPaymentService;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Propel;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -118,7 +119,7 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
                     if ($payment->getState() === PayPal::PAYMENT_STATE_APPROVED) {
                         $event = new OrderEvent($order);
                         $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
-                        $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
+                        $this->getDispatcher()->dispatch($event, TheliaEvents::ORDER_UPDATE_STATUS);
                         $response = new RedirectResponse(URL::getInstance()->absoluteUrl('/order/placed/' . $order->getId()));
                         PayPalLoggerService::log(
                             Translator::getInstance()->trans(
@@ -333,7 +334,7 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
      * @param ConnectionInterface|null $con
      * @throws Exception
      */
-    public function postDeactivation(ConnectionInterface $con = null)
+    public function postDeactivation(ConnectionInterface $con = null): void
     {
         self::changePaymentEnabled(false);
     }
@@ -343,7 +344,7 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
      * @param ConnectionInterface|null $con
      * @throws PropelException
      */
-    public function postActivation(ConnectionInterface $con = null)
+    public function postActivation(ConnectionInterface $con = null): void
     {
         $database = new Database($con);
         $database->insertSql(null, [__DIR__ . "/Config/create.sql"]);
@@ -413,7 +414,7 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
         }
     }
 
-    public function update($currentVersion, $newVersion, ConnectionInterface $con = null)
+    public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
     {
         $finder = (new Finder())
             ->files()
@@ -448,7 +449,6 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
     /**
      * Changer la config
      * @param bool $enabled
-     * @throws PropelException
      */
     public static function changePaymentEnabled($enabled)
     {
@@ -469,5 +469,12 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
 
         return '';
     }
-}
 
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->autowire(true)
+            ->autoconfigure(true);
+    }
+}

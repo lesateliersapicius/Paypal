@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database defaultIdMethod="native" name="thelia"
+<database defaultIdMethod="native" name="TheliaMain"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="../../../../vendor/propel/propel/resources/xsd/database.xsd" >
 
@@ -95,10 +95,6 @@
             <reference foreign="id" local="id" />
         </foreign-key>
         <behavior name="timestampable" />
-        <behavior name="versionable">
-            <parameter name="log_created_at" value="true" />
-            <parameter name="log_created_by" value="true" />
-        </behavior>
     </table>
 
     <table name="paypal_plan" namespace="PayPal\Model">
