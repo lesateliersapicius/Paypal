@@ -168,7 +168,7 @@ class PayPalResponseController extends OrderController
         if ($order instanceof Order) {
             // Event pour signaler qu'on a finit les traitements
             $event = new OrderEvent($order);
-            $this->dispatch(PaymentEventInterface::ORDER_FINISH_PAID_PROCESS_EVENT, $event);
+            $eventDispatcher->dispatch($event, PaymentEventInterface::ORDER_FINISH_PAID_PROCESS_EVENT);
         }
 
         return $response;
@@ -795,7 +795,7 @@ class PayPalResponseController extends OrderController
 
         $cart->setCustomerId($customer->getId())->save();
         $clonedCart = clone $cart;
-        $this->dispatch(TheliaEvents::CUSTOMER_LOGIN, new CustomerLoginEvent($customer));
+        $eventDispatcher->dispatch(new CustomerLoginEvent($customer), TheliaEvents::CUSTOMER_LOGIN);
 
         //In case of the current customer has changed, re affect the correct cart and customer session
         $securityContext->setCustomerUser($customer);
