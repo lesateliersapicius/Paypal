@@ -23,7 +23,7 @@
 
 namespace PayPal\EventListeners;
 
-use ApyUtilities\Interfaces\CustomerMailerInterface;
+use ApyUtilities\Email\AbstractCustomerMailer;
 use PayPal\Event\PayPalCartEvent;
 use PayPal\Event\PayPalEvents;
 use PayPal\Form\PayPalFormFields;
@@ -43,7 +43,7 @@ use Thelia\Core\Event\TheliaEvents;
  */
 class OrderListener implements EventSubscriberInterface
 {
-    /** @var CustomerMailerInterface */
+    /** @var AbstractCustomerMailer */
     private $customerMailer;
 
     /** @var EventDispatcherInterface */
@@ -60,24 +60,18 @@ class OrderListener implements EventSubscriberInterface
 
     /**
      * @param EventDispatcherInterface $dispatcher
-     * @param RequestStack $requestStack
-     * @param PayPalPaymentService $payPalPaymentService
-     * @param PayPalAgreementService $payPalAgreementService
+     * @param RequestStack             $requestStack
+     * @param PayPalPaymentService     $payPalPaymentService
+     * @param PayPalAgreementService   $payPalAgreementService
+     * @param AbstractCustomerMailer   $customerMailer
      */
-    public function __construct(EventDispatcherInterface $dispatcher, RequestStack $requestStack, PayPalPaymentService $payPalPaymentService, PayPalAgreementService $payPalAgreementService)
+    public function __construct(EventDispatcherInterface $dispatcher, RequestStack $requestStack, PayPalPaymentService $payPalPaymentService, PayPalAgreementService $payPalAgreementService, AbstractCustomerMailer $customerMailer)
     {
         $this->dispatcher = $dispatcher;
         $this->requestStack = $requestStack;
         $this->payPalPaymentService = $payPalPaymentService;
         $this->payPalAgreementService = $payPalAgreementService;
-    }
-
-    /**
-     * @param CustomerMailerInterface $customerMailer
-     */
-    public function setCustomerMailer(CustomerMailerInterface $customerMailer)
-    {
-        $this->customerMailer = $customerMailer;
+        $this->customerMailer     = $customerMailer;
     }
 
     /**
