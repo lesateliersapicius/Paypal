@@ -247,7 +247,7 @@ class PayPalAgreementService extends PayPalBaseService
 
         $payPalPlan->setState($plan->getState());
         $payPalPlanEvent = new PayPalPlanEvent($payPalPlan);
-        $this->dispatcher->dispatch(PayPalEvents::PAYPAL_PLAN_UPDATE, $payPalPlanEvent);
+        $this->dispatcher->dispatch($payPalPlanEvent, PayPalEvents::PAYPAL_PLAN_UPDATE);
 
         return $plan;
     }
@@ -394,7 +394,7 @@ class PayPalAgreementService extends PayPalBaseService
 
             $payPalPlan->setState($plan->getState());
             $payPalPlanEvent = new PayPalPlanEvent($payPalPlan);
-            $this->dispatcher->dispatch(PayPalEvents::PAYPAL_PLAN_CREATE, $payPalPlanEvent);
+            $this->dispatcher->dispatch($payPalPlanEvent, PayPalEvents::PAYPAL_PLAN_CREATE);
 
             return $plan;
         }  catch (PayPalConnectionException $e) {
@@ -822,7 +822,7 @@ class PayPalAgreementService extends PayPalBaseService
                 ->setToken($payPalOrder->getToken())
             ;
             $newPayPalOrderEvent = new PayPalOrderEvent($newPayPalOrder);
-            $this->dispatcher->dispatch(PayPalEvents::PAYPAL_ORDER_CREATE, $newPayPalOrderEvent);
+            $this->dispatcher->dispatch($newPayPalOrderEvent, PayPalEvents::PAYPAL_ORDER_CREATE);
 
             $payPalPlans = PaypalPlanQuery::create()->filterByPaypalOrderId($payPalOrder->getId());
 
@@ -837,7 +837,7 @@ class PayPalAgreementService extends PayPalBaseService
                 ;
 
                 $newPayPalPlanEvent = new PayPalPlanEvent($newPayPalPlan);
-                $this->dispatcher->dispatch(PayPalEvents::PAYPAL_PLAN_CREATE, $newPayPalPlanEvent);
+                $this->dispatcher->dispatch($newPayPalPlanEvent, PayPalEvents::PAYPAL_PLAN_CREATE);
             }
         }
 
