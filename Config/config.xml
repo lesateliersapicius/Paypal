@@ -46,11 +46,11 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="paypal.order.listener" class="PayPal\EventListeners\OrderListener">
-            <argument type="service" id="mailer"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="paypal_payment_service"/>
             <argument type="service" id="paypal_agreement_service"/>
+            <argument type="service" id="core.customer.mailer"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="paypal.plan.listener" class="PayPal\EventListeners\PayPalPlanListener">
