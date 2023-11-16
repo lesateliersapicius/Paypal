@@ -31,6 +31,7 @@ use PayPal\Form\PayPalPlanifiedPaymentUpdateForm;
 use PayPal\Model\PaypalPlanifiedPayment;
 use PayPal\Model\PaypalPlanifiedPaymentQuery;
 use PayPal\PayPal;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -158,7 +159,7 @@ class PayPalPlanifiedPaymentController extends AbstractCrudController
             PayPalFormFields::FIELD_PP_POSITION => $object->getPosition()
         ];
 
-        return $this->createForm(PayPalPlanifiedPaymentUpdateForm::getName(), 'form', $data);
+        return $this->createForm(PayPalPlanifiedPaymentUpdateForm::getName(), FormType::class, $data);
     }
 
     /**
