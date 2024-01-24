@@ -26,6 +26,16 @@
         <!-- **************** -->
         <!-- *** Services *** -->
         <!-- **************** -->
+       <service id="router.paypal" class="%router.class%" public="true">
+           <argument type="service" id="router.module.xmlLoader"/>
+           <argument>PayPal/Config/route.xml</argument>
+           <argument type="collection">
+               <argument key="cache_dir">%kernel.cache_dir%</argument>
+               <argument key="debug">%kernel.debug%</argument>
+           </argument>
+           <argument type="service" id="request.context"/>
+           <tag name="router.register" priority="192"/>
+       </service>
        <service id="paypal_base_service" alias="PayPal\Service\Base\PayPalBaseService" public="true"/>
        <service id="paypal_payment_service" alias="PayPal\Service\PayPalPaymentService" public="true"/>
        <service id="paypal_agreement_service" alias="PayPal\Service\PayPalAgreementService" public="true"/>
