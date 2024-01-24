@@ -1,11 +1,11 @@
 {form name="thelia.order.payment"}
     {form_field field='paypal_method'}
         {if $method_paypal_with_in_context}
-        <input type="hidden" id="{$label_attr.for}{$choice->label}-express" class="paypal-method paypal-express-method" name="{$name}" value="{$choice->label}" {if $value == $choice->label}checked{/if}/>
+        <input type="hidden" id="{$label_attr.for}-express" class="paypal-method paypal-express-method" name="{$name}"/>
 
         <img src="{image file='assets/paypal-logo.png' source="PayPal"}" border="0" alt="PayPal account" />
         {else}
-        <input type="hidden" id="{$label_attr.for}{$choice->label}" class="paypal-method" name="{$name}" value="{$choice->label}" {if $value == $choice->label}checked{/if}/>
+        <input type="hidden" id="{$label_attr.for}" class="paypal-method" name="{$name}"/>
         <img src="{image file='assets/paypal-logo.png' source="PayPal"}" border="0" alt="PayPal account" />
         {/if}
     {/form_field}
