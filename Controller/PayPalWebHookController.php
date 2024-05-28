@@ -33,7 +33,6 @@ use PayPal\PayPal;
 use PayPal\Service\PayPalAgreementService;
 use PayPal\Service\PayPalLoggerService;
 use Propel\Runtime\Propel;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Thelia\Controller\Front\BaseFrontController;
