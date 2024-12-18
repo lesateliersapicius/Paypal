@@ -49,9 +49,8 @@ class PayPalLoggerService
         $logger = new Logger(PayPal::getModuleCode());
 
         //Create MysqlHandler
-        $database = new Database(Propel::getConnection());
-        $mySQLHandler = new MySQLHandler(
-            null,
+        $mySQLHandler = new MyOwnSQLHandler(
+            Propel::getConnection()->getWrappedConnection(),
             PaypalLogTableMap::TABLE_NAME,
             array_keys($staticParams),
             $level
@@ -93,7 +92,6 @@ class PayPalLoggerService
                 $logger->addRecord(LOG_DEBUG,$message, array_merge($staticParams, $params));
                 break;
         }
-
     }
 
     /**
