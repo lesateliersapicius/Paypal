@@ -100,7 +100,7 @@ class PayPalLoggerService
      */
     public static function getStaticParams()
     {
-        $psr3Fields = ['channel', 'level', 'message', 'time'];
+        $psr3Fields = ['id', 'hook','channel', 'level', 'message', 'time'];
         $payPalLogFields = PaypalLogTableMap::getFieldNames(PaypalLogTableMap::TYPE_FIELDNAME);
         $readableDate = new \Datetime();
 
