@@ -24,12 +24,10 @@
 namespace PayPal\Service;
 
 use Monolog\Logger;
-use MySQLHandler\MySQLHandler;
 use PayPal\Model\Map\PaypalLogTableMap;
 use PayPal\Model\PaypalLogQuery;
 use PayPal\PayPal;
 use Propel\Runtime\Propel;
-use Thelia\Install\Database;
 
 /**
  * Class PayPalLoggerService
