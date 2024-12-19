@@ -24,12 +24,10 @@
 namespace PayPal\Service;
 
 use Monolog\Logger;
-use MySQLHandler\MySQLHandler;
 use PayPal\Model\Map\PaypalLogTableMap;
 use PayPal\Model\PaypalLogQuery;
 use PayPal\PayPal;
 use Propel\Runtime\Propel;
-use Thelia\Install\Database;
 
 /**
  * Class PayPalLoggerService
@@ -49,9 +47,8 @@ class PayPalLoggerService
         $logger = new Logger(PayPal::getModuleCode());
 
         //Create MysqlHandler
-        $database = new Database(Propel::getConnection());
-        $mySQLHandler = new MySQLHandler(
-            null,
+        $mySQLHandler = new MyOwnSQLHandler(
+            Propel::getConnection()->getWrappedConnection(),
             PaypalLogTableMap::TABLE_NAME,
             array_keys($staticParams),
             $level
@@ -93,7 +90,6 @@ class PayPalLoggerService
                 $logger->addRecord(LOG_DEBUG,$message, array_merge($staticParams, $params));
                 break;
         }
-
     }
 
     /**
@@ -102,7 +98,7 @@ class PayPalLoggerService
      */
     public static function getStaticParams()
     {
-        $psr3Fields = ['channel', 'level', 'message', 'time'];
+        $psr3Fields = ['id', 'channel', 'level', 'message', 'time'];
         $payPalLogFields = PaypalLogTableMap::getFieldNames(PaypalLogTableMap::TYPE_FIELDNAME);
         $readableDate = new \Datetime();
 
