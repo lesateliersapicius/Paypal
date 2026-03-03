@@ -23,6 +23,7 @@
 
 namespace PayPal\EventListeners;
 
+use ApyUtilities\ApyUtilities;
 use ApyUtilities\Email\AbstractCustomerMailer;
 use ApyUtilities\Interfaces\CustomerMailerInterface;
 use PayPal\Event\PayPalCartEvent;
@@ -138,7 +139,10 @@ class OrderListener implements EventSubscriberInterface
         $payPalCartEvent = new PayPalCartEvent($this->payPalPaymentService->getCurrentPayPalCart());
         $this->dispatcher->dispatch($payPalCartEvent, PayPalEvents::PAYPAL_CART_DELETE);
 
-        $postedData = $this->requestStack->getCurrentRequest()->request->all()['thelia_order_payment'];
+        $requests = $this->requestStack->getCurrentRequest()->request->all();
+        $guestKey = strtolower(ApyUtilities::getClassModuleApplication()) . '_order_front_guest';
+
+        $postedData = $requests[$guestKey] ?? $requests['thelia_order_payment'] ?? [];
 
         if (isset($postedData[PayPalFormFields::FIELD_PAYMENT_MODULE]) && PayPal::getModuleId() === $event->getOrder()->getPaymentModuleId()) {
             $this->usePayPalMethod($postedData);
