@@ -211,19 +211,19 @@
 
                                             {custom_render_form_field form=$form field="minimum_amount"}
                                             <div class="input-group">
-                                                <input type="text" {form_field_attributes form=$form field="minimum_amount" value=$minimum_amount}>
+                                                <input type="text" {form_field_attributes form=$form field="minimum_amount" value=$minimum_amount|default:null}>
                                                 <span class="input-group-addon">{currency attr='symbol'}</span>
                                             </div>
                                             {/custom_render_form_field}
 
                                             {custom_render_form_field form=$form field="maximum_amount"}
                                             <div class="input-group">
-                                                <input type="text" {form_field_attributes form=$form field="maximum_amount" value=$maximum_amount}>
+                                                <input type="text" {form_field_attributes form=$form field="maximum_amount" value=$maximum_amount|default:null}>
                                                 <span class="input-group-addon">{currency attr='symbol'}</span>
                                             </div>
                                             {/custom_render_form_field}
 
-                                            {render_form_field form=$form field="cart_item_count" value=$cart_item_count}
+                                            {render_form_field form=$form field="cart_item_count" value=$cart_item_count|default:null}
                                         </div>
                                     </div>
                                 </div>
