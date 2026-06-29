@@ -23,9 +23,7 @@
 
 namespace PayPal\Controller;
 
-use ApyMyBox\Model\ApyOrder;
-use ApyMyBox\Model\ApyOrderQuery;
-use ApyThemeV3\ApyThemeV3;
+use ApyUtilities\ApyUtilities;
 use ApyUtilities\Event\PaymentEventInterface;
 use ApyUtilities\Interfaces\OrderHelperInterface;
 use Front\Controller\OrderController;
@@ -767,11 +765,15 @@ class PayPalResponseController extends OrderController
      *
      * @param $orderId
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function getPaymentSuccessPageUrl($orderId): RedirectResponse
     {
-        $apyOrder = ApyOrderQuery::create()->findOneByOrderId($orderId);
-        if ($apyOrder instanceof ApyOrder) {
+        /** @var OrderHelperInterface $orderHelper */
+        $orderHelper        = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
+        $apyOrderQueryClass = $orderHelper->getApyOrderQueryClassName();
+        $apyOrder           = $apyOrderQueryClass::create()->findOneByOrderId($orderId);
+        if ($apyOrder !== null) {
             return $this->getUrlFromRouteId('order.placed', ['link_token' => $apyOrder->getLinkToken()]);
         }
     }
@@ -846,10 +848,11 @@ class PayPalResponseController extends OrderController
      * @param       $routeId
      * @param array $params
      * @return RedirectResponse
+     * @throws \Exception
      */
     protected function getUrlFromRouteId($routeId, $params = [])
     {
-        $frontOfficeRouter = $this->getContainer()->get(ApyThemeV3::ROUTER_NAME);
+        $frontOfficeRouter = $this->getContainer()->get('router.' . ApyUtilities::getRouterThemeActivated());
 
         return new RedirectResponse(
             URL::getInstance()->absoluteUrl(
@@ -868,10 +871,11 @@ class PayPalResponseController extends OrderController
      * @param $orderId
      * @param $message
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function getPaymentFailurePageUrl($orderId, $message)
     {
-        $frontOfficeRouter = $this->getContainer()->get(ApyThemeV3::ROUTER_NAME);
+        $frontOfficeRouter = $this->getContainer()->get('router.' . ApyUtilities::getRouterThemeActivated());
 
         return new RedirectResponse(
             URL::getInstance()->absoluteUrl(

@@ -12,8 +12,6 @@
 
 namespace PayPal;
 
-use ApyMyBox\Model\ApyOrder;
-use ApyMyBox\Model\ApyOrderQuery;
 use ApySecurity\Model\Role\RoleInterface;
 use ApyUtilities\ApyUtilities;
 use ApyUtilities\Interfaces\ApyPaymentEnabledModuleInterface;
@@ -122,8 +120,11 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
                     if ($payment->getState() === PayPal::PAYMENT_STATE_APPROVED) {
                         $event = new OrderEvent($order);
                         $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
-                        $apyOrder = ApyOrderQuery::create()->findOneByOrderId($order->getId());
-                        if ($apyOrder instanceof ApyOrder) {
+                        /** @var OrderHelperInterface $orderHelper */
+                        $orderHelper        = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
+                        $apyOrderQueryClass = $orderHelper->getApyOrderQueryClassName();
+                        $apyOrder           = $apyOrderQueryClass::create()->findOneByOrderId($order->getId());
+                        if ($apyOrder !== null) {
                             $response = new RedirectResponse(URL::getInstance()->absoluteUrl(
                                 '/order/placed/' . $order->getId()
                             ));
