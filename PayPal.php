@@ -57,6 +57,7 @@ use Thelia\Tools\URL;
 class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInterface
 {
     use PaymentModuleNoLoginTrait;
+
     /** @var string */
     const DOMAIN_NAME     = 'paypal';
     const ROUTER          = 'router.paypal';
@@ -119,8 +120,16 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
                     if ($payment->getState() === PayPal::PAYMENT_STATE_APPROVED) {
                         $event = new OrderEvent($order);
                         $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
+                        /** @var OrderHelperInterface $orderHelper */
+                        $orderHelper        = $this->getContainer()->get(OrderHelperInterface::ORDER_HELPER_SERVICE_ID);
+                        $apyOrderQueryClass = $orderHelper->getApyOrderQueryClassName();
+                        $apyOrder           = $apyOrderQueryClass::create()->findOneByOrderId($order->getId());
+                        if ($apyOrder !== null) {
+                            $response = new RedirectResponse(URL::getInstance()->absoluteUrl(
+                                '/order/placed/' . $order->getId()
+                            ));
+                        }
                         $this->getDispatcher()->dispatch($event, TheliaEvents::ORDER_UPDATE_STATUS);
-                        $response = new RedirectResponse(URL::getInstance()->absoluteUrl('/order/placed/' . $order->getId()));
                         PayPalLoggerService::log(
                             Translator::getInstance()->trans(
                                 'Order payed with success with method : %method',
@@ -329,7 +338,6 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
         return false;
     }
 
-
     /**
      * @param ConnectionInterface|null $con
      * @throws Exception
@@ -441,7 +449,7 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
      * Vérifier si la checkBox pour activé le mode de payement est actif
      * @return bool
      */
-    public static function isPaymentEnabled() : bool
+    public static function isPaymentEnabled(): bool
     {
         return (bool)Paypal::getConfigValue(self::PAYMENT_ENABLED, false);
     }
@@ -454,7 +462,6 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
     {
         return Paypal::setConfigValue(self::PAYMENT_ENABLED, $enabled);
     }
-
 
     /**
      * @param Order $order
@@ -472,8 +479,8 @@ class PayPal extends AbstractPaymentModule implements ApyPaymentEnabledModuleInt
 
     public static function configureServices(ServicesConfigurator $servicesConfigurator): void
     {
-        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
-            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+        $servicesConfigurator->load(self::getModuleCode() . '\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()) . "/I18n/*"])
             ->autowire(true)
             ->autoconfigure(true);
     }
